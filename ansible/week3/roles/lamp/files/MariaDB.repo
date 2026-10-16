@@ -1,0 +1,10 @@
+# MariaDB 12.3 RedHatEnterpriseLinux repository list - created 2026-09-28 00:50 UTC
+# https://mariadb.org/download/
+[mariadb]
+name = MariaDB
+# rpm.mariadb.org is a dynamic mirror if your preferred mirror goes offline. See https://mariadb.org/mirrorbits/ for details.
+# baseurl = https://rpm.mariadb.org/12.3/rhel/$releasever/$basearch
+baseurl = https://mirrors.gigenet.com/mariadb/yum/12.3/rhel/$releasever/$basearch
+# gpgkey = https://rpm.mariadb.org/RPM-GPG-KEY-MariaDB
+gpgkey = https://mirrors.gigenet.com/mariadb/yum/RPM-GPG-KEY-MariaDB
+gpgcheck = 1

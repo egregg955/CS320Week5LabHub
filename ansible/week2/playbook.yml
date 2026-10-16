@@ -1,0 +1,31 @@
+---
+
+- name: Gather Ansible Facts
+  hosts: cs320
+  remote_user: egregg
+
+  tasks: 
+  - name: Output Hostname
+    ansible.builtin.debug:
+      msg: "The hostname is: {{ ansible_facts['hostname'] }}" 
+
+  - name: Output IP Address
+    ansible.builtin.debug:
+      msg: "The IP address is: {{ ansible_facts['default_ipv4']['address'] }}" 
+ 
+  - name: Output Major Linux Distribution Family
+    ansible.builtin.debug:
+      msg: "The Linux distribution family is: {{ ansible_facts['os_family'] }}" 
+
+  - name: Output Total Disk Size
+    ansible.builtin.debug:
+      msg: "Total Disk Size: {{ ansible_facts['mounts'][0]['size_total'] | human_readable if ansible_facts['mounts'] else 'No mounts found' }}" 
+
+  - name: Output Total RAM
+    ansible.builtin.debug:
+      msg: "Total RAM: {{ ansible_facts['memtotal_mb'] }} MB" 
+
+  - name: Output Number of Processor Cores
+    ansible.builtin.debug:
+      msg: "Number of processor cores: {{ ansible_facts['processor_vcpus'] }}" 
+

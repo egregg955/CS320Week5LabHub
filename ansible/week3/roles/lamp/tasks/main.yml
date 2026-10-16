@@ -1,0 +1,114 @@
+---
+
+- name: Install the latest version of Apache
+  ansible.builtin.dnf:
+    name: httpd
+    state: latest
+  become: true
+
+- name: Enable and start service httpd and ensure it is not masked
+  ansible.builtin.systemd_service:
+    name: httpd
+    state: started
+    enabled: true
+    masked: no
+  become: true
+
+- name: Copy MariaDB Repo to Server 
+  ansible.builtin.copy:
+    src: ../files/MariaDB.repo
+    dest: /etc/yum.repos.d/MariaDB.repo
+    owner: root
+    group: root
+    mode: '0644'
+  become: true 
+
+- name: Install MariaDB Server
+  ansible.builtin.dnf:
+    name: 
+      - MariaDB-server
+      - python3-PyMySQL
+    state: latest
+  become: true
+
+- name: Enable and start service mariadb and ensure it is not masked
+  ansible.builtin.systemd_service:
+    name: mariadb
+    state: started
+    enabled: true
+    masked: no
+  become: true
+
+- name: Ensure MySQL is started and enabled
+  ansible.builtin.service:
+    name: mysql 
+    state: started
+    enabled: true
+  become: true
+
+- name: Install Python MySQL dependencies
+  ansible.builtin.package:
+    name: python3-PyMySQL
+    state: present
+  become: true
+
+- name: Create Web Server Database User
+  community.mysql.mysql_user:
+    name: "webserver"
+    password: "webserversarefun2026!"
+    priv: "*.*:ALL"
+    state: present
+    login_user: "root"
+    login_unix_socket: "/var/lib/mysql/mysql.sock"
+  become: true
+
+- name: Install PHP and Extensions
+  ansible.builtin.dnf:
+    name: 
+      - php
+      - php-cli
+      - php-fpm
+      - php-curl
+      - php-mysqlnd
+      - php-gd
+      - php-readline
+      - php-mbstring
+      - php-apcu
+      - php-xml
+      - php-dom
+      - php-opcache
+      - php-zip
+      - php-intl 
+      - php-common
+      - php-bcmath
+      - php-json
+
+    state: latest
+  become: true
+
+- name: Copy httpd.conf to web server 
+  ansible.builtin.template:
+    src: ../templates/httpd.conf.j2
+    dest: /etc/httpd/conf/httpd.conf
+    owner: apache
+    group: apache 
+    mode: '0644' 
+  become: true 
+  notify: "Restart apache"
+
+- name: Open Port 80
+  ansible.posix.firewalld:
+    port: 80/tcp
+    permanent: true
+    state: enabled 
+  become: true 
+
+- name: Create a PHP info test page for validation
+  ansible.builtin.copy:
+    dest: /var/www/html/index.php 
+    content: "<?php phpinfo(); ?>" 
+    owner: apache
+    group: apache
+    mode: '0644' 
+  become: true
+

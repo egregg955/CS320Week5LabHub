@@ -1,0 +1,17 @@
+---
+- name: Ensure required PHP and web dependencies are installed
+  ansible.builtin.dnf:
+    name:
+      - php
+      - php-mysqlnd
+      - php-json
+      - wget
+    state: present
+
+- name: Create WordPress installation directory
+  ansible.builtin.file:
+    path: /var/www/wordpress
+    state: directory
+    owner: apache
+    group: apache
+    mode: '0755'

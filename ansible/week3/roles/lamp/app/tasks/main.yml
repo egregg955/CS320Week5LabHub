@@ -1,0 +1,67 @@
+---
+
+- name: Copy sample index.php file containing phpinfo to document root 
+  ansible.builtin.copy:
+    dest: /var/www/html/index.php 
+    content: "<?php phpinfo(); ?>" 
+    owner: apache
+    group: apache
+    mode: '0644' 
+
+- name: Ensure git package is installed
+  ansible.builtin.dnf:
+    name: git
+    state: present
+
+- name: Clone MariaDB PHP Quickstart respository into a temporary path 
+  ansible.builtin.git:
+    repo: 'https://github.com'
+    dest: /tmp/php-quickstart 
+    version: main
+    force: true
+
+- name: Import the application database schema 
+  community.mysql.mysql_db:
+    name: "{{ db_name }}" 
+    state: import 
+    target: /tmp/php-quickstart/schema.sql 
+    login_unix_socket: /var/lib/mysql/mysql.sock 
+
+- name: Sync repository application source files to Apache document root
+  ansible.builtin.copy:
+    src: /tmp/php-quickstart/src/
+    dest: /var/www/html/ 
+    remote_src: true 
+    owner: apache
+    group: apache
+    mode: '0644' 
+
+- name: Configure database connection credentials inside config.php
+  ansible.builtin.copy:
+    dest: /var/www/html/config.php 
+    content:  |
+      <?php  
+      $databaseHost = '127.0.0.1';
+      $databaseUsername = '{{ db_user }}';
+      $databasePassword = '{{ db_password }}';
+      $databaseName = '{{ db_name }}'; 
+    owner: apache
+    group: apache
+    mode: '0640' 
+
+- name: Allow Apache to connect to the database over the network 
+  ansible.posix.seboolean: 
+    name: httpd_can_network_connect
+    state: true
+    persistent: true
+
+- name: Apply proper SELinux context to the web files
+  community.general.sefcontext:
+    target: '/var/www/html(/.*)?'
+    setype: httpd_sys_content_t
+    state: present
+
+- name: Force SELinux to reload and apply file changes immediately 
+  ansible.builtin.command: restorecon -Rv /var/www/html 
+  changed_when: true 
+

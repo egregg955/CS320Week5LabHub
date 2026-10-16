@@ -1,0 +1,25 @@
+---
+
+- name: Install Apache HTTP Server (httpd)
+  ansible.builtin.dnf:
+    name: httpd
+    state: present
+
+- name: Ensure Apache service is started and enabled at system startup
+  ansible.builtin.systemd:
+    name: httpd
+    state: started
+    enabled: true
+
+- name: Force restart the HTTPD service to apply changes
+  ansible.builtin.systemd:
+    name: httpd
+    state: restarted
+
+- name: Confirm that the service is running
+  ansible.builtin.systemd:
+    name: httpd
+  register: httpd_service_status
+  failed_when: httpd_service_status.status.ActiveState != "active"
+  changed_when: false
+

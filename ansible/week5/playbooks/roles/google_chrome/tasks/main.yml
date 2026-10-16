@@ -1,0 +1,14 @@
+---
+- name: Ensure Google Chrome repo file is placed
+  ansible.builtin.copy:
+    src: google_chrome.repo
+    dest: /etc/yum.repos.d/google-chrome.repo
+    owner: root
+    group: root
+    mode: '0644'
+  ignore_errors: true
+
+- name: Remove Google Chrome package per Step 3
+  ansible.builtin.dnf:
+    name: google-chrome-stable
+    state: absent

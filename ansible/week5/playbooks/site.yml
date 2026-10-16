@@ -1,0 +1,29 @@
+---
+
+- name: Deploy software configurations to AlmaLinux server
+  hosts: all 
+  become: yes
+  vars:
+    ansible_remote_tmp: /tmp
+  roles:
+    - common
+    - google_chrome
+    - firefox
+    - git
+    - apache
+    - mariadb 
+    - web_app
+    - wordpress
+
+- name: Step 3 & 4 - Post-Deployment Cleanup & Reboot
+  hosts: all
+  become: yes
+  tasks:
+    - name: Uninstall Google Chrome package after full installation completes
+      ansible.builtin.dnf:
+        name: google-chrome-stable
+        state: absent
+
+    - name: Reboot the remote server and wait for it to return online
+      ansible.builtin.reboot:
+        reboot_timeout: 300

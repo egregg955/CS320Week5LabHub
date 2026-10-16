@@ -1,0 +1,29 @@
+---
+
+- name: Ensure the target web directory exists
+  ansible.builtin.file:
+    path: /var/www/html
+    state: directory
+    owner: apache
+    group: apache
+    mode: '0755'
+
+- name: Copy three sample HTML files to the Apache document root
+  ansible.builtin.copy:
+    src: sample_site/
+    dest: /var/www/html/
+    owner: apache
+    group: apache
+    mode: '0644'
+
+- name: Ensure the web application directory exists
+  ansible.builtin.file:
+    path: /var/www/html
+    state: directory
+    mode: '0755'
+
+- name: Deploy a basic index file for the web app
+  ansible.builtin.copy:
+    content: "<h1>Welcome to the Week 5 Web App deployed via Ansible!</h1>"
+    dest: /var/www/html/index.html
+    mode: '0644'

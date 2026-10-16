@@ -1,0 +1,9 @@
+---
+
+db_name: project1
+db_user: egregg
+db_password: "SecurePassword123!"
+
+apache_listen_port: 80
+apache_admin_email: root@localhost
+apache_document_root: /var/www/html

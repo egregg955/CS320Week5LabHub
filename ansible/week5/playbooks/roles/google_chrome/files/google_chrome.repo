@@ -1,0 +1,6 @@
+[google-chrome]
+name=Google Chrome
+baseurl=http://google.com
+enabled=1
+gpgcheck=1
+gpgkey=https://google.com

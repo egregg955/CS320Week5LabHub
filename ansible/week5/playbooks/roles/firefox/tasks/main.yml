@@ -1,0 +1,5 @@
+---
+- name: Install Firefox from standard repositories
+  ansible.builtin.dnf:
+    name: firefox
+    state: present

@@ -1,0 +1,10 @@
+---
+- name: Install Git package via DNF
+  ansible.builtin.dnf:
+    name: git
+    state: present
+
+- name: Verify Git version is installed
+  ansible.builtin.command: git --version
+  register: git_version
+  changed_when: false
